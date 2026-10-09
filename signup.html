@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Free Account | OmniQR Studio - Pro QR Generator</title>
+  <meta name="description"
+    content="Join OmniQR Studio to generate vector QR codes with embedded branding logos, real-time scan analytics, dynamic redirection, and unlimited exports.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme auth-page-body">
+  <!-- Background Glow & Ambient Mesh -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header auth-page-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand-group" title="Back to OmniQR Studio">
+        <div class="brand-logo">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            <path d="M14 14h3v3h-3z"></path>
+            <path d="M20 14v3"></path>
+            <path d="M14 20h3"></path>
+            <path d="M20 20v.01"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>OmniQR <span class="badge-pro">PRO STUDIO</span></h1>
+          <p>Generate, Customize & Track Any QR Code</p>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-secondary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Back to App</span>
+        </a>
+        <a href="login.html" class="btn btn-primary btn-sm">
+          <span>Sign In</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Auth Container -->
+  <main class="auth-main-wrapper">
+    <div class="auth-card-container glass-card">
+      
+      <!-- Left Column: Showcase & Perks -->
+      <div class="auth-showcase-panel">
+        <div class="showcase-content">
+          <div class="showcase-badge">
+            <span class="pulsing-dot"></span>
+            <span>GET STARTED FOR FREE</span>
+          </div>
+
+          <h2 class="showcase-title">Supercharge Your QR Operations</h2>
+          <p class="showcase-subtitle">
+            Create professional branded QR codes for Wi-Fi, PDFs, App Stores, vCards, and Web links with instant scan diagnostics.
+          </p>
+
+          <div class="showcase-features-list">
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">✨</div>
+              <div>
+                <strong>Custom Brand Colors & Logos</strong>
+                <p>Embed custom brand logos, modern gradients, and stylish corner eyes.</p>
+              </div>
+            </div>
+
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">📈</div>
+              <div>
+                <strong>Device & OS Telemetry</strong>
+                <p>Monitor real-time scan events with simulated and live analytics counters.</p>
+              </div>
+            </div>
+
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">🖨️</div>
+              <div>
+                <strong>Print-Ready Table Tents & Flyers</strong>
+                <p>Generate high-resolution printable table stands and business cards.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="signup-perks-pill">
+            <span class="perk-check">✓</span>
+            <span>Free forever tier • No credit card required • Instant activation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Registration Form -->
+      <div class="auth-form-panel">
+        <div class="auth-form-header">
+          <h2 class="auth-heading">Create Your Account</h2>
+          <p class="auth-subheading">Sign up in seconds to save, edit, and track your QR codes.</p>
+        </div>
+
+        <!-- Social Quick Logins -->
+        <div class="social-login-grid">
+          <button type="button" class="btn-social" id="btnSocialGoogle">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.4 8.9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+              <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.4s.2-1.7.4-2.4L1.6 7c-.8 1.6-1.3 3.4-1.3 5.3s.5 3.7 1.3 5.3l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.4-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+            </svg>
+            <span>Google</span>
+          </button>
+
+          <button type="button" class="btn-social" id="btnSocialGithub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+            </svg>
+            <span>GitHub</span>
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>or register with email</span>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="formSignup" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="inputSignupName" class="form-label">Full Name</label>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" id="inputSignupName" class="text-input" placeholder="Alex Morgan" required
+                autocomplete="name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputSignupEmail" class="form-label">Email Address</label>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" id="inputSignupEmail" class="text-input" placeholder="alex@company.com" required
+                autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputSignupPassword" class="form-label">Create Password</label>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input type="password" id="inputSignupPassword" class="text-input" placeholder="Min. 6 characters" required
+                autocomplete="new-password">
+              <button type="button" class="password-toggle-btn" id="btnToggleSignupPass" title="Show or hide password">
+                <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Real-time Password Strength Meter -->
+            <div class="pass-strength-widget" id="passStrengthWidget">
+              <div class="strength-bar-track">
+                <div class="strength-bar-fill" id="strengthBarFill"></div>
+              </div>
+              <div class="strength-labels">
+                <span class="strength-tag">Strength: <strong id="strengthLabelText">None</strong></span>
+                <span class="strength-rules-hint" id="strengthRulesHint">Min 6 characters</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputSignupConfirm" class="form-label">Confirm Password</label>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </span>
+              <input type="password" id="inputSignupConfirm" class="text-input" placeholder="Repeat your password" required
+                autocomplete="new-password">
+              <span class="match-status-badge hidden" id="passMatchBadge">✓ Match</span>
+            </div>
+          </div>
+
+          <div class="form-meta-row">
+            <label class="custom-checkbox-wrap">
+              <input type="checkbox" id="checkAgreeTerms" checked required>
+              <span class="checkbox-box"></span>
+              <span class="checkbox-label">I agree to the <a href="#" class="inline-link" onclick="event.preventDefault(); alert('OmniQR operates 100% client-side with zero tracking storage leaks.');">Terms of Service</a> & <a href="#" class="inline-link" onclick="event.preventDefault(); alert('Your QR payloads and designs are stored in your secure browser storage.');">Privacy Policy</a></span>
+            </label>
+          </div>
+
+          <button type="submit" id="btnSignupSubmit" class="btn btn-primary btn-full-width">
+            <span class="btn-text">Create Free Studio Account</span>
+            <svg class="btn-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </form>
+
+        <div class="auth-switch-prompt">
+          <span>Already registered?</span>
+          <a href="login.html" class="auth-accent-link">Sign in to your account →</a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="app-footer auth-page-footer">
+    <div class="footer-inner">
+      <span>OmniQR Pro Studio • High-Performance Vector QR Generator & Real-time Scan Telemetry</span>
+      <span class="footer-meta">100% Client-Side Privacy • Zero External Tracking Leak</span>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script>
+    document.getElementById('formSignup').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('inputSignupName').value;
+  const email = document.getElementById('inputSignupEmail').value;
+  const password = document.getElementById('inputSignupPassword').value;
+  const confirm = document.getElementById('inputSignupConfirm').value;
+  const agree = document.getElementById('checkAgreeTerms').checked;
+  const btn = document.getElementById('btnSignupSubmit');
+
+  if (!agree) {
+    showToast('Please agree to the Terms of Service.', 'warning');
+    return;
+  }
+
+  if (password !== confirm) {
+    showToast('Password confirmation does not match.', 'error');
+    return;
+  }
+
+  try {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="pulsing-dot"></span><span>Creating account in SQLite...</span>';
+
+    const user = await window.OmniAuth.register({ name, email, password, role: 'pro' });
+    showToast(`Account created! Welcome, ${user.name}!`, 'success');
+
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 800);
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="btn-text">Create Free Studio Account</span>';
+    showToast(err.message, 'error');
+  }
+});
+  </script>
+</body>
+
+</html>

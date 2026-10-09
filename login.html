@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | OmniQR Studio - Pro QR Generator & Telemetry</title>
+  <meta name="description"
+    content="Sign in to your OmniQR Studio account to access your saved QR code vault, real-time scan analytics, and custom vector templates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme auth-page-body">
+  <!-- Background Glow & Ambient Mesh -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header auth-page-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand-group" title="Back to OmniQR Studio">
+        <div class="brand-logo">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            <path d="M14 14h3v3h-3z"></path>
+            <path d="M20 14v3"></path>
+            <path d="M14 20h3"></path>
+            <path d="M20 20v.01"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>OmniQR <span class="badge-pro">PRO STUDIO</span></h1>
+          <p>Generate, Customize & Track Any QR Code</p>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-secondary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Back to App</span>
+        </a>
+        <a href="signup.html" class="btn btn-primary btn-sm">
+          <span>Create Account</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Auth Container -->
+  <main class="auth-main-wrapper">
+    <div class="auth-card-container glass-card">
+      
+      <!-- Left Column: Feature Showcase & Value Proposition -->
+      <div class="auth-showcase-panel">
+        <div class="showcase-content">
+          <div class="showcase-badge">
+            <span class="pulsing-dot"></span>
+            <span>PRO QR CLOUD ECOSYSTEM</span>
+          </div>
+
+          <h2 class="showcase-title">Welcome Back to Your QR Command Center</h2>
+          <p class="showcase-subtitle">
+            Log in to manage dynamic destination redirects, view real-time scan telemetry, and export ultra-sharp vector QRs for print & digital campaigns.
+          </p>
+
+          <div class="showcase-features-list">
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">⚡</div>
+              <div>
+                <strong>Unlimited Vector Exports</strong>
+                <p>Crisp SVG & 4K PNG outputs with zero resolution loss.</p>
+              </div>
+            </div>
+
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">📊</div>
+              <div>
+                <strong>Live Scan Telemetry</strong>
+                <p>Track scanner operating systems, devices, and hourly scan surges.</p>
+              </div>
+            </div>
+
+            <div class="showcase-feature-item">
+              <div class="feature-icon-bubble">🛡️</div>
+              <div>
+                <strong>Private Vault Storage</strong>
+                <p>Your designs and payloads are stored securely on your account.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase-footer-quote">
+            <div class="quote-stars">★★★★★</div>
+            <p>"The fastest and most reliable QR generation suite for modern digital workflows."</p>
+            <span class="quote-author">— OmniQR Power Creator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Login Form -->
+      <div class="auth-form-panel">
+        <div class="auth-form-header">
+          <h2 class="auth-heading">Sign In to OmniQR</h2>
+          <p class="auth-subheading">Enter your account credentials to continue to your workspace.</p>
+        </div>
+
+        <!-- 1-Click Demo Accounts Banner -->
+        <div class="demo-accounts-box">
+          <div class="demo-box-header">
+            <span class="demo-badge">QUICK TEST</span>
+            <span>One-click instant login:</span>
+          </div>
+          <div class="demo-btns-grid">
+            <button type="button" class="btn-demo-quick" id="btnDemoPro">
+              <span class="demo-btn-icon">🚀</span>
+              <div class="demo-btn-text">
+                <span class="demo-role">Pro Account</span>
+                <span class="demo-email">alex@omniqr.pro</span>
+              </div>
+            </button>
+            <button type="button" class="btn-demo-quick" id="btnDemoFree">
+              <span class="demo-btn-icon">⚡</span>
+              <div class="demo-btn-text">
+                <span class="demo-role">Creator Account</span>
+                <span class="demo-email">demo@omniqr.pro</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-divider">
+          <span>or sign in with email</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="formLogin" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="inputLoginEmail" class="form-label">Email Address</label>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" id="inputLoginEmail" class="text-input" placeholder="name@company.com" required
+                autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row-split">
+              <label for="inputLoginPassword" class="form-label">Password</label>
+              <button type="button" class="text-link-btn" id="btnForgotPassword">Forgot Password?</button>
+            </div>
+            <div class="input-with-icon">
+              <span class="input-prefix-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input type="password" id="inputLoginPassword" class="text-input" placeholder="••••••••" required
+                autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" id="btnToggleLoginPass" title="Show or hide password" aria-label="Toggle password visibility">
+                <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-meta-row">
+            <label class="custom-checkbox-wrap">
+              <input type="checkbox" id="checkRememberMe" checked>
+              <span class="checkbox-box"></span>
+              <span class="checkbox-label">Keep me signed in</span>
+            </label>
+          </div>
+
+          <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-full-width">
+            <span class="btn-text">Sign In to Dashboard</span>
+            <svg class="btn-arrow-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>or continue with</span>
+        </div>
+
+        <!-- Social Logins -->
+        <div class="social-login-grid">
+          <button type="button" class="btn-social" id="btnSocialGoogle">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.4 8.9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+              <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.4s.2-1.7.4-2.4L1.6 7c-.8 1.6-1.3 3.4-1.3 5.3s.5 3.7 1.3 5.3l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.4-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+            </svg>
+            <span>Google</span>
+          </button>
+
+          <button type="button" class="btn-social" id="btnSocialGithub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+            </svg>
+            <span>GitHub</span>
+          </button>
+
+          <button type="button" class="btn-social" id="btnSocialApple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.87c.6-1.12.98-2.68.8-4.24-1.38.08-2.98.92-3.66 2.05-.54.91-.97 2.37-.8 3.86 1.54.12 3.06-.79 3.66-1.67z"/>
+            </svg>
+            <span>Apple</span>
+          </button>
+        </div>
+
+        <div class="auth-switch-prompt">
+          <span>New to OmniQR Studio?</span>
+          <a href="signup.html" class="auth-accent-link">Create a free account →</a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="app-footer auth-page-footer">
+    <div class="footer-inner">
+      <span>OmniQR Pro Studio • High-Performance Vector QR Generator & Real-time Scan Telemetry</span>
+      <span class="footer-meta">100% Client-Side Privacy • Zero External Tracking Leak</span>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+<script src="auth.js"></script>
+<script>
+  function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icons = { success: '✓', info: 'ℹ', warning: '⚠', error: '✕' };
+    toast.innerHTML = `
+      <span style="font-weight: 800; font-size: 1.1rem;">${icons[type] || '•'}</span>
+      <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => toast.remove(), 250);
+    }, 3500);
+  }
+
+  // Password toggle
+  const passInput = document.getElementById('inputLoginPassword');
+  const toggleBtn = document.getElementById('btnToggleLoginPass');
+  const eyeOpen = toggleBtn.querySelector('.eye-open');
+  const eyeClosed = toggleBtn.querySelector('.eye-closed');
+
+  toggleBtn.addEventListener('click', () => {
+    const isPass = passInput.type === 'password';
+    passInput.type = isPass ? 'text' : 'password';
+    eyeOpen.classList.toggle('hidden', isPass);
+    eyeClosed.classList.toggle('hidden', !isPass);
+  });
+
+  // Quick Demo logins via SQLite API
+  document.getElementById('btnDemoPro').addEventListener('click', async () => {
+    try {
+      const user = await window.OmniAuth.quickDemoLogin('pro');
+      showToast(`Welcome back, ${user.name}! Logging in...`, 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  });
+
+  document.getElementById('btnDemoFree').addEventListener('click', async () => {
+    try {
+      const user = await window.OmniAuth.quickDemoLogin('free');
+      showToast(`Welcome back, ${user.name}! Logging in...`, 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  });
+
+  // Form Submit via SQLite API
+  document.getElementById('formLogin').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('inputLoginEmail').value;
+    const password = document.getElementById('inputLoginPassword').value;
+    const remember = document.getElementById('checkRememberMe').checked;
+    const btn = document.getElementById('btnLoginSubmit');
+
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="pulsing-dot"></span><span>Verifying credentials...</span>';
+      
+      const user = await window.OmniAuth.login(email, password, remember);
+      showToast(`Signed in successfully as ${user.name}! Redirecting...`, 'success');
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 700);
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="btn-text">Sign In to Dashboard</span>';
+      showToast(err.message, 'error');
+    }
+  });
+
+  ['Google', 'Github', 'Apple'].forEach(provider => {
+    const btn = document.getElementById(`btnSocial${provider}`);
+    if (btn) {
+      btn.addEventListener('click', async () => {
+        const user = await window.OmniAuth.socialLogin(provider.toLowerCase());
+        showToast(`Authenticated via ${provider}! Redirecting...`, 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 700);
+      });
+    }
+  });
+
+  document.getElementById('btnForgotPassword').addEventListener('click', () => {
+    showToast('Demo Mode: Default password for seed accounts is "password123"', 'info');
+  });
+
+  const existing = window.OmniAuth.getCurrentUser();
+  if (existing) {
+    document.getElementById('inputLoginEmail').value = existing.email;
+  }
+</script>
+</body>
+
+</html>

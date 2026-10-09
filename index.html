@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniQR Studio | Modern QR Code Generator & Real-time Scan Analytics</title>
+  <meta name="description"
+    content="Generate high-performance custom QR codes for links, Wi-Fi, PDFs, contacts, and text with real-time scan analytics, counts, and interactive tracking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Offline-first QR generation & scanning libraries with multi-path fallbacks -->
+  <script src="qrcode.min.js"></script>
+  <script src="jsqr.min.js"></script>
+  <script>
+    if (typeof qrcode === 'undefined') {
+      document.write('<script src="lib/qrcode.min.js"><\/script>');
+    }
+    if (typeof jsQR === 'undefined') {
+      document.write('<script src="lib/jsqr.min.js"><\/script>');
+    }
+  </script>
+  <script>
+    if (typeof qrcode === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"><\/script>');
+    }
+    if (typeof jsQR === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"><\/script>');
+    }
+  </script>
+</head>
+
+<body class="dark-theme">
+  <!-- Background Glow & Ambient Mesh -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- App Header / Navigation -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            <path d="M14 14h3v3h-3z"></path>
+            <path d="M20 14v3"></path>
+            <path d="M14 20h3"></path>
+            <path d="M20 20v.01"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>OmniQR <span class="badge-pro">PRO STUDIO</span></h1>
+          <p>Generate, Customize & Track Any QR Code</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" role="tablist">
+        <button id="navTabStudio" class="nav-tab active" data-tab="studio" role="tab" aria-selected="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Generator</span>
+        </button>
+        <button id="navTabAnalytics" class="nav-tab" data-tab="analytics" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"></path>
+            <path d="M12 20V4"></path>
+            <path d="M6 20v-6"></path>
+          </svg>
+          <span>Scan Analytics</span>
+          <span id="headerScanBadge" class="nav-badge">0</span>
+        </button>
+        <button id="navTabScanner" class="nav-tab" data-tab="scanner" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+          </svg>
+          <span>Scanner</span>
+        </button>
+        <button id="navTabLibrary" class="nav-tab" data-tab="library" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <path d="M3 9h18"></path>
+            <path d="M9 21V9"></path>
+          </svg>
+          <span>Saved Vault</span>
+          <span id="headerSavedBadge" class="nav-badge alt">0</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="btnQuickScanSim" class="btn btn-secondary btn-sm" title="Simulate a live scan to test analytics">
+          <span class="pulsing-dot"></span>
+          <span>Simulate Scan</span>
+        </button>
+
+        <!-- Dynamic Auth Section in Header -->
+        <div id="headerAuthContainer" class="header-auth-group">
+          <!-- Logged Out Buttons (Default) -->
+          <div id="headerLoggedOutBox" class="header-auth-btns">
+            <button type="button" id="btnHeaderLogin" class="btn btn-secondary btn-sm">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+              <span>Sign In</span>
+            </button>
+            <button type="button" id="btnHeaderSignup" class="btn btn-primary btn-sm">
+              <span>Sign Up</span>
+            </button>
+          </div>
+
+          <!-- Logged In User Pill with Dropdown -->
+          <div id="headerLoggedInBox" class="hidden">
+            <div id="userProfilePill" class="user-profile-pill" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" title="Account Menu">
+              <div id="headerUserAvatar" class="user-avatar-circle">AM</div>
+              <div class="user-pill-info">
+                <span id="headerUserName" class="user-pill-name">Alex Morgan</span>
+                <span id="headerUserTier" class="user-pill-tier">PRO MEMBER</span>
+              </div>
+              <svg class="dropdown-arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+
+            <!-- Dropdown Menu -->
+            <div id="userDropdownMenu" class="user-dropdown-menu hidden" role="menu">
+              <div class="dropdown-user-header">
+                <div id="dropdownUserAvatar" class="user-avatar-circle">AM</div>
+                <div class="dropdown-user-details">
+                  <h4 id="dropdownUserName">Alex Morgan</h4>
+                  <p id="dropdownUserEmail">alex@omniqr.pro</p>
+                </div>
+              </div>
+
+              <div class="dropdown-stats-card">
+                <div class="dropdown-stat-box">
+                  <div id="dropdownStatQrs" class="dropdown-stat-num">0</div>
+                  <div class="dropdown-stat-label">Saved QRs</div>
+                </div>
+                <div class="dropdown-stat-box">
+                  <div id="dropdownStatScans" class="dropdown-stat-num">0</div>
+                  <div class="dropdown-stat-label">Total Scans</div>
+                </div>
+              </div>
+
+              <button type="button" id="btnMenuOpenVault" class="dropdown-item-btn" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <path d="M3 9h18"></path>
+                  <path d="M9 21V9"></path>
+                </svg>
+                <span>My Saved Vault</span>
+              </button>
+
+              <button type="button" id="btnMenuOpenSettings" class="dropdown-item-btn" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Account & Profile</span>
+              </button>
+
+              <button type="button" id="btnMenuSignOut" class="dropdown-item-btn danger" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="app-main">
+
+    <!-- ========================================== -->
+    <!-- 1. STUDIO / GENERATOR VIEW                 -->
+    <!-- ========================================== -->
+    <section id="viewStudio" class="view-panel active">
+      <div class="studio-layout">
+
+        <!-- Left: Configuration Form -->
+        <div class="studio-config-column">
+
+          <!-- Mode Selection: Direct Native vs Dynamic Tracking -->
+          <div class="tracking-mode-card">
+            <div class="mode-header-box">
+              <div class="mode-icon-wrap" id="modeIconBadge">
+                <span>⚡</span>
+              </div>
+              <div>
+                <h3 class="mode-title" id="modeTitleText">Mode: Direct Native QR (Exact & Offline)</h3>
+                <p class="mode-desc" id="modeDescText">Encodes your exact destination (Wi-Fi password, YouTube link,
+                  etc.). Any smartphone camera acts natively on scan with no middleman website.</p>
+              </div>
+            </div>
+
+            <div class="mode-segmented-control">
+              <button type="button" class="mode-seg-btn active" id="btnModeDirect" data-mode="direct">
+                <span class="seg-icon">⚡</span>
+                <div class="seg-info">
+                  <span class="seg-heading">Direct Native QR (Recommended)</span>
+                  <span class="seg-sub">Exact Link/Wi-Fi • Instant phone prompt • Works offline</span>
+                </div>
+              </button>
+              <button type="button" class="mode-seg-btn" id="btnModeDynamic" data-mode="dynamic">
+                <span class="seg-icon">🌐</span>
+                <div class="seg-info">
+                  <span class="seg-heading">Web Tracking Gateway</span>
+                  <span class="seg-sub">For web campaigns • Logs scan count & device analytics</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Host field for Dynamic mode -->
+            <div id="dynamicHostConfig" class="dynamic-host-box hidden">
+              <label for="inputGatewayHost" class="sub-label">Redirect Server URL</label>
+              <div class="input-with-icon">
+                <span class="input-prefix-icon">📡</span>
+                <input type="text" id="inputGatewayHost" class="text-input" placeholder="http://localhost:8080">
+              </div>
+              <span class="helper-tag">Enter your public domain or local IP (e.g. http://192.168.x.x:8080) so mobile cameras can resolve /r/:id.</span>
+            </div>
+          </div>
+
+          <!-- Type Selector Tabs -->
+          <div class="type-selector-card">
+            <label class="section-label">Select QR Code Type</label>
+            <div class="type-pill-grid">
+              <button class="type-pill active" data-type="url" id="typeBtnUrl">
+                <span class="type-icon">🔗</span>
+                <span class="type-name">Link / URL</span>
+              </button>
+              <button class="type-pill" data-type="wifi" id="typeBtnWifi">
+                <span class="type-icon">📶</span>
+                <span class="type-name">Wi-Fi</span>
+              </button>
+              <button class="type-pill" data-type="pdf" id="typeBtnPdf">
+                <span class="type-icon">📄</span>
+                <span class="type-name">PDF / File</span>
+              </button>
+              <button class="type-pill" data-type="text" id="typeBtnText">
+                <span class="type-icon">📝</span>
+                <span class="type-name">Text / Note</span>
+              </button>
+              <button class="type-pill" data-type="vcard" id="typeBtnVcard">
+                <span class="type-icon">👤</span>
+                <span class="type-name">vCard / Contact</span>
+              </button>
+              <button class="type-pill" data-type="email" id="typeBtnEmail">
+                <span class="type-icon">✉️</span>
+                <span class="type-name">Email</span>
+              </button>
+              <button class="type-pill" data-type="whatsapp" id="typeBtnWhatsapp">
+                <span class="type-icon">💬</span>
+                <span class="type-name">WhatsApp</span>
+              </button>
+              <button class="type-pill" data-type="upi" id="typeBtnUpi">
+                <span class="type-icon">💳</span>
+                <span class="type-name">UPI / Pay</span>
+              </button>
+              <button class="type-pill" data-type="event" id="typeBtnEvent">
+                <span class="type-icon">📅</span>
+                <span class="type-name">Event</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Input Panels based on Type -->
+          <div class="glass-card content-input-card">
+
+            <!-- 1. URL Input -->
+            <div id="inputGroupUrl" class="type-input-group active">
+              <div class="input-header">
+                <label for="inputUrlTarget" class="field-label">Website or Destination URL</label>
+                <span class="helper-tag">Supports https://, web apps, social profiles</span>
+              </div>
+              <div class="input-with-icon">
+                <span class="input-prefix-icon">🌐</span>
+                <input type="url" id="inputUrlTarget" class="text-input" placeholder="https://yourwebsite.com"
+                  value="https://www.youtube.com">
+              </div>
+              <div class="quick-examples">
+                <span>Quick try:</span>
+                <button type="button" class="btn-chip" data-fill-url="https://github.com">GitHub</button>
+                <button type="button" class="btn-chip" data-fill-url="https://youtube.com">YouTube</button>
+                <button type="button" class="btn-chip" data-fill-url="https://linkedin.com">LinkedIn</button>
+              </div>
+            </div>
+
+            <!-- 2. Wi-Fi Input -->
+            <div id="inputGroupWifi" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">Wi-Fi Network Configuration</label>
+                <span class="helper-tag">Instant connect on smartphone camera scan</span>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputWifiSsid" class="sub-label">Network Name (SSID) *</label>
+                  <input type="text" id="inputWifiSsid" class="text-input" placeholder="e.g. Home_5G_Fiber"
+                    value="Office_Guest_WiFi">
+                </div>
+                <div class="form-group">
+                  <label for="inputWifiAuth" class="sub-label">Security / Encryption</label>
+                  <select id="inputWifiAuth" class="select-input">
+                    <option value="WPA" selected>WPA/WPA2/WPA3 (Standard)</option>
+                    <option value="WEP">WEP (Legacy)</option>
+                    <option value="nopass">None (Open Network)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" id="wifiPassContainer">
+                <label for="inputWifiPass" class="sub-label">Wi-Fi Password</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">🔑</span>
+                  <input type="text" id="inputWifiPass" class="text-input" placeholder="Enter network password"
+                    value="SuperSecureWifi2026!">
+                </div>
+              </div>
+              <label class="checkbox-label">
+                <input type="checkbox" id="inputWifiHidden">
+                <span>Hidden Network (SSID is not broadcasted)</span>
+              </label>
+            </div>
+
+            <!-- 3. PDF / Document Input -->
+            <div id="inputGroupPdf" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">Upload or Link PDF Document</label>
+                <span class="helper-tag">Scanners will view or download this PDF directly</span>
+              </div>
+
+              <!-- Tabs for PDF: Upload File or Direct PDF URL -->
+              <div class="pdf-mode-tabs">
+                <button type="button" id="btnPdfUploadMode" class="btn-subtab active">Upload PDF File</button>
+                <button type="button" id="btnPdfUrlMode" class="btn-subtab">Direct PDF Web Link</button>
+              </div>
+
+              <!-- Upload Zone -->
+              <div id="pdfUploadZone" class="file-dropzone">
+                <input type="file" id="inputPdfFile" accept="application/pdf,image/*,.doc,.docx"
+                  class="hidden-file-input">
+                <div class="dropzone-content">
+                  <div class="dropzone-icon">📁</div>
+                  <h4>Drag & drop your PDF or document here</h4>
+                  <p>Or click to browse from device (PDF, Docs, Menus, Catalogs)</p>
+                  <span class="file-hint">Automatically attaches portable data package</span>
+                </div>
+              </div>
+
+              <!-- Selected File Card -->
+              <div id="pdfSelectedCard" class="file-selected-card hidden">
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                  <div class="file-title" id="pdfFileName">document.pdf</div>
+                  <div class="file-meta" id="pdfFileSize">1.2 MB • Ready for scanning</div>
+                </div>
+                <button type="button" id="btnRemovePdf" class="btn-icon-danger" title="Remove PDF">✕</button>
+              </div>
+
+              <!-- Direct PDF URL alternative -->
+              <div id="pdfUrlContainer" class="form-group hidden">
+                <label for="inputPdfDirectUrl" class="sub-label">Direct PDF URL</label>
+                <input type="url" id="inputPdfDirectUrl" class="text-input" placeholder="https://example.com/menu.pdf">
+              </div>
+
+              <div class="form-group" style="margin-top: 12px;">
+                <label for="inputPdfTitle" class="sub-label">Document Display Title</label>
+                <input type="text" id="inputPdfTitle" class="text-input" placeholder="e.g. Restaurant Spring Menu 2026"
+                  value="Digital Document & Menu">
+              </div>
+            </div>
+
+            <!-- 4. Text / Note Input -->
+            <div id="inputGroupText" class="type-input-group">
+              <div class="input-header">
+                <label for="inputTextPayload" class="field-label">Plain Text or Note</label>
+                <span id="textCharCount" class="helper-tag">0 chars</span>
+              </div>
+              <textarea id="inputTextPayload" class="textarea-input" rows="4"
+                placeholder="Enter any text, code snippet, serial number, or private note..."></textarea>
+            </div>
+
+            <!-- 5. vCard / Contact Input -->
+            <div id="inputGroupVcard" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">Contact Card (vCard 3.0)</label>
+                <span class="helper-tag">Saves directly into phone contacts</span>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputVcardFirst" class="sub-label">First Name *</label>
+                  <input type="text" id="inputVcardFirst" class="text-input" placeholder="Alex" value="Alex">
+                </div>
+                <div class="form-group">
+                  <label for="inputVcardLast" class="sub-label">Last Name</label>
+                  <input type="text" id="inputVcardLast" class="text-input" placeholder="Morgan" value="Morgan">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputVcardPhone" class="sub-label">Phone Number *</label>
+                  <input type="tel" id="inputVcardPhone" class="text-input" placeholder="+1 555 019 2834"
+                    value="+1 555 234 5678">
+                </div>
+                <div class="form-group">
+                  <label for="inputVcardEmail" class="sub-label">Email Address</label>
+                  <input type="email" id="inputVcardEmail" class="text-input" placeholder="alex@company.com"
+                    value="alex.morgan@techcorp.io">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputVcardOrg" class="sub-label">Company / Organization</label>
+                  <input type="text" id="inputVcardOrg" class="text-input" placeholder="TechCorp Global"
+                    value="OmniTech AI Labs">
+                </div>
+                <div class="form-group">
+                  <label for="inputVcardTitle" class="sub-label">Job Title</label>
+                  <input type="text" id="inputVcardTitle" class="text-input" placeholder="Director of Engineering"
+                    value="Chief Product Architect">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputVcardUrl" class="sub-label">Portfolio or Website</label>
+                <input type="url" id="inputVcardUrl" class="text-input" placeholder="https://alexmorgan.dev"
+                  value="https://omniqr.pro">
+              </div>
+            </div>
+
+            <!-- 6. Email Input -->
+            <div id="inputGroupEmail" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">Pre-composed Email Message</label>
+                <span class="helper-tag">Opens user's default email client</span>
+              </div>
+              <div class="form-group">
+                <label for="inputEmailTo" class="sub-label">Recipient Email *</label>
+                <input type="email" id="inputEmailTo" class="text-input" placeholder="support@company.com"
+                  value="hello@innovate.dev">
+              </div>
+              <div class="form-group">
+                <label for="inputEmailSubject" class="sub-label">Subject Line</label>
+                <input type="text" id="inputEmailSubject" class="text-input" placeholder="Inquiry about services"
+                  value="Product Inquiry & Consultation">
+              </div>
+              <div class="form-group">
+                <label for="inputEmailBody" class="sub-label">Email Body</label>
+                <textarea id="inputEmailBody" class="textarea-input" rows="3"
+                  placeholder="Hello team, I would like to learn more about...">Hello, I saw your QR code and would love to schedule a demo.</textarea>
+              </div>
+            </div>
+
+            <!-- 7. WhatsApp Input -->
+            <div id="inputGroupWhatsapp" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">WhatsApp Direct Chat</label>
+                <span class="helper-tag">Opens WhatsApp chat with prefilled text</span>
+              </div>
+              <div class="form-group">
+                <label for="inputWaPhone" class="sub-label">Phone Number (with Country Code, no + or spaces) *</label>
+                <input type="tel" id="inputWaPhone" class="text-input" placeholder="14155552671" value="14155552671">
+              </div>
+              <div class="form-group">
+                <label for="inputWaMessage" class="sub-label">Prefilled Message</label>
+                <textarea id="inputWaMessage" class="textarea-input" rows="3"
+                  placeholder="Hi! I want to inquire about...">Hi! I scanned your QR code and would like more details.</textarea>
+              </div>
+            </div>
+
+            <!-- 8. UPI / Payment Input -->
+            <div id="inputGroupUpi" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">UPI / Direct Payment</label>
+                <span class="helper-tag">Scannable by Google Pay, PhonePe, Paytm, Banking Apps</span>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputUpiId" class="sub-label">UPI VPA ID *</label>
+                  <input type="text" id="inputUpiId" class="text-input" placeholder="merchant@okaxis"
+                    value="business@upi">
+                </div>
+                <div class="form-group">
+                  <label for="inputUpiName" class="sub-label">Payee Name *</label>
+                  <input type="text" id="inputUpiName" class="text-input" placeholder="Store Name / Merchant"
+                    value="OmniQR Store">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputUpiAmount" class="sub-label">Amount (Optional)</label>
+                  <input type="number" id="inputUpiAmount" class="text-input" placeholder="e.g. 250.00" step="0.01">
+                </div>
+                <div class="form-group">
+                  <label for="inputUpiNote" class="sub-label">Transaction Note</label>
+                  <input type="text" id="inputUpiNote" class="text-input" placeholder="Order #8921"
+                    value="Coffee and pastry">
+                </div>
+              </div>
+            </div>
+
+            <!-- 9. Event Input -->
+            <div id="inputGroupEvent" class="type-input-group">
+              <div class="input-header">
+                <label class="field-label">Calendar Event (iCal)</label>
+                <span class="helper-tag">Adds directly to Google / Apple Calendar</span>
+              </div>
+              <div class="form-group">
+                <label for="inputEventTitle" class="sub-label">Event Title *</label>
+                <input type="text" id="inputEventTitle" class="text-input" placeholder="Product Launch Conference"
+                  value="Omni Tech Global Summit 2026">
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="inputEventStart" class="sub-label">Start Date & Time *</label>
+                  <input type="datetime-local" id="inputEventStart" class="text-input">
+                </div>
+                <div class="form-group">
+                  <label for="inputEventEnd" class="sub-label">End Date & Time</label>
+                  <input type="datetime-local" id="inputEventEnd" class="text-input">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEventLocation" class="sub-label">Location / Meeting Link</label>
+                <input type="text" id="inputEventLocation" class="text-input" placeholder="Grand Hall A / Zoom Link"
+                  value="Convention Center & Live Stream">
+              </div>
+            </div>
+
+            <!-- QR Label / Internal Name -->
+            <div class="form-group meta-name-group">
+              <label for="inputQrLabel" class="sub-label">QR Title / Campaign Tag (For Analytics & Vault)</label>
+              <input type="text" id="inputQrLabel" class="text-input" placeholder="e.g. Main Website Campaign"
+                value="Official Company Portal">
+            </div>
+
+          </div>
+
+          <!-- Customization Accordions -->
+          <div class="customization-accordion-wrapper">
+
+            <!-- Accordion 1: Colors & Gradients -->
+            <details class="accordion-item" open>
+              <summary class="accordion-header">
+                <span class="acc-title">🎨 Colors & Gradient Styling</span>
+                <span class="acc-arrow">▼</span>
+              </summary>
+              <div class="accordion-body">
+                <div class="color-mode-toggle">
+                  <label class="radio-pill">
+                    <input type="radio" name="colorFillMode" value="single" checked id="radioFillSingle">
+                    <span>Solid Color</span>
+                  </label>
+                  <label class="radio-pill">
+                    <input type="radio" name="colorFillMode" value="gradient" id="radioFillGradient">
+                    <span>Dynamic Gradient</span>
+                  </label>
+                </div>
+
+                <div class="color-picker-grid">
+                  <div class="color-picker-field">
+                    <label class="sub-label">Foreground (Dots)</label>
+                    <div class="picker-input-wrap">
+                      <input type="color" id="colorFgPrimary" value="#0F172A">
+                      <input type="text" id="colorFgPrimaryHex" class="hex-input" value="#0F172A">
+                    </div>
+                  </div>
+
+                  <div class="color-picker-field" id="colorFgSecondaryWrap" style="display: none;">
+                    <label class="sub-label">Gradient End Color</label>
+                    <div class="picker-input-wrap">
+                      <input type="color" id="colorFgSecondary" value="#6366F1">
+                      <input type="text" id="colorFgSecondaryHex" class="hex-input" value="#6366F1">
+                    </div>
+                  </div>
+
+                  <div class="color-picker-field">
+                    <label class="sub-label">Background</label>
+                    <div class="picker-input-wrap">
+                      <input type="color" id="colorBg" value="#FFFFFF">
+                      <input type="text" id="colorBgHex" class="hex-input" value="#FFFFFF">
+                    </div>
+                  </div>
+
+                  <div class="color-picker-field">
+                    <label class="sub-label">Corner Eye Color</label>
+                    <div class="picker-input-wrap">
+                      <input type="color" id="colorEye" value="#0F172A">
+                      <input type="text" id="colorEyeHex" class="hex-input" value="#0F172A">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="color-presets-row">
+                  <span class="sub-label">Presets:</span>
+                  <div class="preset-swatches">
+                    <button type="button" class="swatch-btn" data-fg="#0F172A" data-bg="#FFFFFF" data-eye="#0F172A"
+                      title="Classic Noir"
+                      style="background: linear-gradient(135deg, #0F172A 50%, #ffffff 50%);"></button>
+                    <button type="button" class="swatch-btn" data-fg="#2563EB" data-bg="#EFF6FF" data-eye="#1D4ED8"
+                      title="Royal Blue"
+                      style="background: linear-gradient(135deg, #2563EB 50%, #EFF6FF 50%);"></button>
+                    <button type="button" class="swatch-btn" data-fg="#059669" data-bg="#ECFDF5" data-eye="#047857"
+                      title="Emerald Luxe"
+                      style="background: linear-gradient(135deg, #059669 50%, #ECFDF5 50%);"></button>
+                    <button type="button" class="swatch-btn" data-fg="#7C3AED" data-bg="#F5F3FF" data-eye="#6D28D9"
+                      title="Neon Violet"
+                      style="background: linear-gradient(135deg, #7C3AED 50%, #F5F3FF 50%);"></button>
+                    <button type="button" class="swatch-btn" data-fg="#E11D48" data-bg="#FFF1F2" data-eye="#BE123C"
+                      title="Crimson Bold"
+                      style="background: linear-gradient(135deg, #E11D48 50%, #FFF1F2 50%);"></button>
+                    <button type="button" class="swatch-btn" data-fg="#F8FAFC" data-bg="#090D16" data-eye="#38BDF8"
+                      title="Cyber Dark"
+                      style="background: linear-gradient(135deg, #38BDF8 50%, #090D16 50%);"></button>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Accordion 2: Pattern & Eye Shapes -->
+            <details class="accordion-item">
+              <summary class="accordion-header">
+                <span class="acc-title">💠 Pattern & Eye Corner Shapes</span>
+                <span class="acc-arrow">▼</span>
+              </summary>
+              <div class="accordion-body">
+                <div class="form-group">
+                  <label class="sub-label">Body Module Style</label>
+                  <div class="style-cards-grid">
+                    <button type="button" class="style-card active" data-style-dot="square">
+                      <div class="style-icon-preview sq-box"></div>
+                      <span>Classic Square</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-dot="dots">
+                      <div class="style-icon-preview rd-dot"></div>
+                      <span>Circle Dots</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-dot="rounded">
+                      <div class="style-icon-preview sm-rd"></div>
+                      <span>Smooth Rounded</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-dot="diamond">
+                      <div class="style-icon-preview dia-box"></div>
+                      <span>Diamond</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 14px;">
+                  <label class="sub-label">Corner Eye Frame Shape</label>
+                  <div class="style-cards-grid">
+                    <button type="button" class="style-card active" data-style-eye="square">
+                      <div class="eye-shape-preview eye-sq"></div>
+                      <span>Square</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-eye="rounded">
+                      <div class="eye-shape-preview eye-rd"></div>
+                      <span>Rounded</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-eye="circle">
+                      <div class="eye-shape-preview eye-cir"></div>
+                      <span>Circle</span>
+                    </button>
+                    <button type="button" class="style-card" data-style-eye="leaf">
+                      <div class="eye-shape-preview eye-leaf"></div>
+                      <span>Leaf / Modern</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Accordion 3: Logo & Center Icon -->
+            <details class="accordion-item">
+              <summary class="accordion-header">
+                <span class="acc-title">⭐ Center Logo & Branding</span>
+                <span class="acc-arrow">▼</span>
+              </summary>
+              <div class="accordion-body">
+                <div class="logo-selector-wrap">
+                  <label class="sub-label">Pick Preset Icon</label>
+                  <div class="preset-logo-grid">
+                    <button type="button" class="preset-logo-btn active" data-preset-logo="none"
+                      title="No logo">None</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="link" title="Link">🔗</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="wifi" title="WiFi">📶</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="pdf" title="PDF">📄</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="whatsapp"
+                      title="WhatsApp">💬</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="star" title="Star">⭐</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="heart" title="Heart">❤️</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="lock" title="Secure">🔒</button>
+                    <button type="button" class="preset-logo-btn" data-preset-logo="shop" title="Shopping">🛍️</button>
+                  </div>
+                </div>
+
+                <div class="custom-logo-upload-wrap" style="margin-top: 14px;">
+                  <label class="sub-label">Or Upload Your Brand Logo (PNG / SVG)</label>
+                  <div class="logo-upload-bar">
+                    <input type="file" id="inputCustomLogo" accept="image/*" class="hidden-file-input">
+                    <button type="button" id="btnBrowseLogo" class="btn btn-secondary btn-sm">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <span>Choose Custom Logo</span>
+                    </button>
+                    <button type="button" id="btnClearLogo" class="btn btn-ghost btn-sm" style="display: none;">Clear
+                      Logo</button>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 12px;">
+                  <div class="slider-header">
+                    <label for="rangeLogoScale" class="sub-label">Logo Size</label>
+                    <span id="labelLogoScale" class="slider-val">22%</span>
+                  </div>
+                  <input type="range" id="rangeLogoScale" min="14" max="28" value="22" class="range-slider">
+                </div>
+              </div>
+            </details>
+
+            <!-- Accordion 4: Frame & Call-to-Action -->
+            <details class="accordion-item">
+              <summary class="accordion-header">
+                <span class="acc-title">🖼️ Frame & Call to Action (CTA)</span>
+                <span class="acc-arrow">▼</span>
+              </summary>
+              <div class="accordion-body">
+                <div class="form-group">
+                  <label class="sub-label">Frame Style</label>
+                  <div class="frame-style-grid">
+                    <button type="button" class="frame-card active" data-frame-style="none">
+                      <span>No Frame</span>
+                    </button>
+                    <button type="button" class="frame-card" data-frame-style="bottom">
+                      <span>Bottom Banner</span>
+                    </button>
+                    <button type="button" class="frame-card" data-frame-style="top">
+                      <span>Top Banner</span>
+                    </button>
+                    <button type="button" class="frame-card" data-frame-style="card">
+                      <span>Full Badge Card</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group" id="frameTextConfig" style="margin-top: 12px; display: none;">
+                  <label for="inputFrameText" class="sub-label">Frame Text / Call to Action</label>
+                  <input type="text" id="inputFrameText" class="text-input" placeholder="SCAN ME" value="SCAN ME">
+                </div>
+              </div>
+            </details>
+
+          </div>
+        </div>
+
+        <!-- Right: Real-time Live QR Preview Column -->
+        <div class="studio-preview-column">
+          <div class="glass-card preview-sticky-card">
+
+            <div class="preview-card-header">
+              <div class="preview-badge">
+                <span class="pulsing-green-dot"></span>
+                <span>LIVE GENERATION</span>
+              </div>
+              <div id="dynamicStatusBadge" class="preview-dynamic-tag static">
+                <span>Direct Native QR</span>
+              </div>
+            </div>
+
+            <!-- The QR Canvas Wrapper -->
+            <div class="qr-canvas-stage-wrapper">
+              <div class="qr-canvas-stage" id="qrStage">
+                <canvas id="qrCanvasMain" width="340" height="340"></canvas>
+              </div>
+            </div>
+
+            <!-- Live Scan Counts & Quick Info Bar -->
+            <div class="live-qr-metrics-bar" id="liveQrMetricsBar">
+              <div class="metric-item">
+                <span class="m-val" id="previewScanCount">0</span>
+                <span class="m-lbl">Total Scans</span>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric-item">
+                <span class="m-val" id="previewUniqueCount">0</span>
+                <span class="m-lbl">Unique Scanners</span>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric-item">
+                <span class="m-val" id="previewLastScan">Never</span>
+                <span class="m-lbl">Last Activity</span>
+              </div>
+            </div>
+
+            <!-- Target Summary & Exact Encoded Data Inspector -->
+            <div class="target-summary-box">
+              <div class="target-summary-header">
+                <div class="target-type-badge" id="previewTypeBadge">🔗 Link</div>
+                <span class="exact-data-badge">Exact Scanned Payload</span>
+              </div>
+              <div class="target-desc" id="previewPayloadDesc">https://www.youtube.com</div>
+              <div class="scanner-behavior-hint" id="scannerBehaviorHint">
+                📱 Any phone camera will open YouTube directly on scan.
+              </div>
+            </div>
+
+            <!-- Primary Action Buttons -->
+            <div class="action-buttons-group">
+              <div class="download-dropdown-wrap">
+                <button type="button" id="btnDownloadPng" class="btn btn-primary btn-block">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Download High-Res PNG</span>
+                </button>
+              </div>
+
+              <div class="secondary-actions-row">
+                <button type="button" id="btnDownloadSvg" class="btn btn-secondary btn-sm"
+                  title="Download vector SVG format">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
+                  <span>SVG Vector</span>
+                </button>
+                <button type="button" id="btnPrintCard" class="btn btn-secondary btn-sm"
+                  title="Print scan flyer / card">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                  <span>Print Flyer</span>
+                </button>
+                <button type="button" id="btnCopyClipboard" class="btn btn-secondary btn-sm"
+                  title="Copy QR code image to clipboard">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+
+              <div class="studio-bottom-actions">
+                <button type="button" id="btnSaveToLibrary" class="btn btn-accent btn-block">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  <span>Save QR to Vault (SQLite)</span>
+                </button>
+
+                <!-- Direct Simulation Test Button -->
+                <button type="button" id="btnSimulateScanCurrent" class="btn btn-ghost btn-sm btn-block"
+                  style="margin-top: 8px;">
+                  <span class="pulsing-dot"></span>
+                  <span>Test Scan This QR Code (Increments Counter)</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 2. ANALYTICS & SCAN DATA VIEW              -->
+    <!-- ========================================== -->
+    <section id="viewAnalytics" class="view-panel">
+      <div class="analytics-layout">
+
+        <div class="analytics-header-row">
+          <div>
+            <h2 class="view-title">Scan Intelligence & Analytics Portal</h2>
+            <p class="view-subtitle">SQLite backed real-time scan counter, visitor telemetry, device categorization, and historical trends.</p>
+          </div>
+          <div class="analytics-controls">
+            <select id="selectAnalyticsFilterQr" class="select-input select-sm">
+              <option value="all">All QR Codes (Consolidated)</option>
+            </select>
+            <button type="button" id="btnSimulateRandomScan" class="btn btn-secondary btn-sm">
+              <span class="pulsing-dot"></span>
+              <span>+ Simulate Visitor Scan</span>
+            </button>
+            <button type="button" id="btnExportCsv" class="btn btn-ghost btn-sm" title="Export scan data to CSV">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Export CSV</span>
+            </button>
+            <button type="button" id="btnClearAnalytics" class="btn btn-ghost btn-sm text-danger"
+              title="Clear all analytics">
+              <span>Reset Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="kpi-grid">
+          <div class="glass-card kpi-card">
+            <div class="kpi-icon-wrap kpi-blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total Scans Recorded</span>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiTotalScans">0</span>
+                <span class="kpi-trend" id="kpiTotalTrend">+100%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-icon-wrap kpi-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Unique Scanners</span>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiUniqueScans">0</span>
+                <span class="kpi-tag">Organic</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-icon-wrap kpi-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Top Device Category</span>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiTopDevice">Mobile</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card kpi-card">
+            <div class="kpi-icon-wrap kpi-amber">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="kpi-data">
+              <span class="kpi-label">Last Scan Activity</span>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiLastActivity">No scans yet</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="glass-card chart-card-wide">
+            <div class="card-header-bar">
+              <div>
+                <h3 class="card-title">Scan Activity Timeline</h3>
+                <p class="card-subtitle">Scans recorded over the last 7 days</p>
+              </div>
+              <span class="live-pill"><span class="pulsing-green-dot"></span> Live Feed</span>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="chartScansTimeline" height="260"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card chart-card-narrow">
+            <div class="card-header-bar">
+              <div>
+                <h3 class="card-title">Device Breakdown</h3>
+                <p class="card-subtitle">Mobile vs Desktop vs Tablet</p>
+              </div>
+            </div>
+            <div class="chart-canvas-container flex-center">
+              <canvas id="chartDeviceBreakdown" width="240" height="240"></canvas>
+            </div>
+            <div class="chart-legend" id="deviceLegend"></div>
+          </div>
+        </div>
+
+        <!-- Scan Activity Stream Table -->
+        <div class="glass-card table-card">
+          <div class="card-header-bar">
+            <div>
+              <h3 class="card-title">Detailed Scan Activity Log (SQLite)</h3>
+              <p class="card-subtitle">Real-time log of every QR code scan event with timestamp and device telemetry</p>
+            </div>
+            <span id="logCountBadge" class="counter-badge">0 entries</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="tableScanLogs">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>QR Code Campaign</th>
+                  <th>Type</th>
+                  <th>Device / OS</th>
+                  <th>Browser</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="scanLogsTbody">
+                <tr>
+                  <td colspan="7" class="empty-table-cell">
+                    <div class="empty-state-wrap">
+                      <span class="empty-icon">📊</span>
+                      <h4>No scans recorded yet</h4>
+                      <p>Click "Simulate Scan" or scan a generated QR code to see live analytics populate here!</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 3. BUILT-IN QR SCANNER VIEW                -->
+    <!-- ========================================== -->
+    <section id="viewScanner" class="view-panel">
+      <div class="scanner-layout">
+
+        <div class="scanner-header-row">
+          <div>
+            <h2 class="view-title">Integrated QR Code Scanner</h2>
+            <p class="view-subtitle">Test and decode QR codes directly using your device camera or by uploading an image file.</p>
+          </div>
+        </div>
+
+        <div class="scanner-grid">
+          <div class="glass-card camera-card">
+            <div class="camera-card-header">
+              <div class="camera-status">
+                <span class="pulsing-green-dot" id="scannerStatusDot"></span>
+                <span id="scannerStatusText">Camera Standby</span>
+              </div>
+              <div class="camera-controls">
+                <button type="button" id="btnStartCamera" class="btn btn-primary btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                  </svg>
+                  <span>Start Camera</span>
+                </button>
+                <button type="button" id="btnStopCamera" class="btn btn-secondary btn-sm"
+                  style="display: none;">Stop</button>
+              </div>
+            </div>
+
+            <div class="scanner-viewport-wrap">
+              <video id="scannerVideo" playsinline muted></video>
+              <canvas id="scannerCanvasOverlay"></canvas>
+
+              <div class="scanner-reticle" id="scannerReticle">
+                <div class="corner-reticle top-left"></div>
+                <div class="corner-reticle top-right"></div>
+                <div class="corner-reticle bottom-left"></div>
+                <div class="corner-reticle bottom-right"></div>
+                <div class="scan-laser-line"></div>
+              </div>
+
+              <div class="scanner-placeholder" id="scannerPlaceholder">
+                <div class="ph-icon">📷</div>
+                <h3>Camera is paused</h3>
+                <p>Click "Start Camera" above or drop a QR code image to test decoding.</p>
+              </div>
+            </div>
+
+            <div class="scanner-dropzone-bar" id="scannerImageDropzone">
+              <input type="file" id="inputScanImageFile" accept="image/*" class="hidden-file-input">
+              <div class="drop-text-row">
+                <span>📁 <strong>Drop QR image here</strong> or click to browse</span>
+                <span class="subtle-badge">Instant File Scan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card scan-result-card">
+            <div class="result-header">
+              <h3 class="card-title">Decoded QR Content</h3>
+              <span id="decodeTypeBadge" class="type-pill-badge">Awaiting Scan</span>
+            </div>
+
+            <div class="result-body-wrap" id="resultEmptyState">
+              <div class="empty-state-wrap">
+                <span class="empty-icon">🔍</span>
+                <h4>No QR code detected yet</h4>
+                <p>Point your camera at any QR code, or upload an image file of a QR code.</p>
+              </div>
+            </div>
+
+            <div class="result-body-wrap hidden" id="resultContentState">
+              <div class="decoded-raw-box" id="decodedRawText"></div>
+              <div class="parsed-details-list" id="parsedDetailsList"></div>
+
+              <div class="result-actions-row">
+                <button type="button" id="btnOpenDecodedLink" class="btn btn-primary btn-block">
+                  <span>Open / Execute Action</span>
+                </button>
+                <button type="button" id="btnCopyDecoded" class="btn btn-secondary btn-block">
+                  <span>Copy Content</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- 4. SAVED QR CODES VAULT VIEW               -->
+    <!-- ========================================== -->
+    <section id="viewLibrary" class="view-panel">
+      <div class="library-layout">
+
+        <div class="library-header-row">
+          <div>
+            <h2 class="view-title">My QR Code Vault</h2>
+            <p class="view-subtitle">Access your SQLite database saved designs, inspect their scan counts, or load and export.</p>
+          </div>
+          <div class="library-controls">
+            <input type="search" id="inputSearchLibrary" class="text-input search-input"
+              placeholder="Search by title or content...">
+            <button type="button" id="btnNewQrStudio" class="btn btn-primary btn-sm">
+              <span>+ Create New QR</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="library-grid" id="libraryCardsGrid"></div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- MODALS & OVERLAYS                          -->
+  <!-- ========================================== -->
+
+  <!-- Modal 1: Dynamic Scan Landing Experience   -->
+  <div id="modalScanGateway" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header-brand">
+        <span class="pulsing-green-dot"></span>
+        <span class="modal-brand-label">OMNIQR TRACKED GATEWAY</span>
+        <button type="button" class="modal-close-btn" id="btnCloseScanModal">✕</button>
+      </div>
+
+      <div class="modal-body-content" id="modalScanContent"></div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Print Flyer Preview               -->
+  <div id="modalPrintFlyer" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card print-card-modal">
+      <div class="modal-header-brand">
+        <span class="modal-brand-label">PRINTABLE FLYER / TABLE TENT</span>
+        <button type="button" class="modal-close-btn" id="btnClosePrintModal">✕</button>
+      </div>
+      <div class="print-sheet-content" id="printSheetArea">
+        <div class="print-flyer-box">
+          <div class="flyer-top-title" id="flyerTitle">SCAN TO CONNECT</div>
+          <div class="flyer-sub" id="flyerSubtitle">Point your smartphone camera to access</div>
+          <div class="flyer-qr-wrapper">
+            <img id="flyerQrImg" alt="QR Code Flyer">
+          </div>
+          <div class="flyer-footer" id="flyerFooter">Powered by OmniQR Studio</div>
+        </div>
+      </div>
+      <div class="print-modal-actions">
+        <button type="button" id="btnExecutePrint" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          <span>Print Now</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="btnCancelPrint">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: In-App Authentication (Login & Sign Up) -->
+  <div id="modalAuth" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-auth-container">
+      <div class="modal-header-brand">
+        <span class="modal-brand-label">OMNIQR ACCOUNT ACCESS</span>
+        <button type="button" class="modal-close-btn" id="btnCloseAuthModal">✕</button>
+      </div>
+
+      <div class="modal-auth-grid">
+        <div class="auth-showcase-panel">
+          <div class="showcase-content">
+            <div class="showcase-badge">
+              <span class="pulsing-dot"></span>
+              <span>SQLITE CLOUD VAULT</span>
+            </div>
+            <h3 class="showcase-title" style="font-size: 1.45rem;">Unlock Full Studio Capabilities</h3>
+            <p class="showcase-subtitle" style="font-size: 0.85rem; margin-bottom: 20px;">
+              Manage your QR vault, sync across devices, monitor real-time scan analytics and export print-ready vector designs.
+            </p>
+            <div class="showcase-features-list" style="gap: 14px; margin-bottom: 20px;">
+              <div class="showcase-feature-item">
+                <div class="feature-icon-bubble">⚡</div>
+                <div>
+                  <strong style="font-size: 0.85rem;">Unlimited Vector QRs</strong>
+                  <p style="font-size: 0.75rem;">SVG, 4K PNG & Canvas presets.</p>
+                </div>
+              </div>
+              <div class="showcase-feature-item">
+                <div class="feature-icon-bubble">📈</div>
+                <div>
+                  <strong style="font-size: 0.85rem;">Scan Telemetry</strong>
+                  <p style="font-size: 0.75rem;">OS, browser and timestamp metrics.</p>
+                </div>
+              </div>
+            </div>
+            <div class="signup-perks-pill" style="padding: 8px 12px; font-size: 0.75rem;">
+              <span class="perk-check">✓</span>
+              <span>100% Privacy • SQLite Engine Persistence</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-form-panel" style="padding: 24px;">
+          <div class="modal-auth-tabs">
+            <button type="button" id="tabAuthLogin" class="modal-auth-tab active" data-auth-tab="login">Sign In</button>
+            <button type="button" id="tabAuthSignup" class="modal-auth-tab" data-auth-tab="signup">Create Account</button>
+          </div>
+
+          <div id="panelAuthLogin" class="modal-auth-tab-panel active" style="padding: 20px 0 0 0;">
+            <div class="demo-accounts-box" style="margin-bottom: 14px;">
+              <div class="demo-box-header">
+                <span class="demo-badge">QUICK DEMO</span>
+                <span>Click to test instantly:</span>
+              </div>
+              <div class="demo-btns-grid">
+                <button type="button" class="btn-demo-quick" id="btnModalDemoPro">
+                  <span class="demo-btn-icon">🚀</span>
+                  <div class="demo-btn-text">
+                    <span class="demo-role">Pro Account</span>
+                    <span class="demo-email">alex@omniqr.pro</span>
+                  </div>
+                </button>
+                <button type="button" class="btn-demo-quick" id="btnModalDemoFree">
+                  <span class="demo-btn-icon">⚡</span>
+                  <div class="demo-btn-text">
+                    <span class="demo-role">Creator Account</span>
+                    <span class="demo-email">demo@omniqr.pro</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-divider" style="margin: 12px 0;"><span>or with credentials</span></div>
+
+            <form id="formModalLogin" class="auth-form" style="gap: 12px;" novalidate>
+              <div class="form-group">
+                <label for="inputModalLoginEmail" class="form-label" style="font-size: 0.8rem;">Email Address</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">✉️</span>
+                  <input type="email" id="inputModalLoginEmail" class="text-input" placeholder="alex@omniqr.pro" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="label-row-split">
+                  <label for="inputModalLoginPass" class="form-label" style="font-size: 0.8rem;">Password</label>
+                  <button type="button" class="text-link-btn" id="btnModalForgotPass">Forgot?</button>
+                </div>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">🔒</span>
+                  <input type="password" id="inputModalLoginPass" class="text-input" placeholder="••••••••" required>
+                  <button type="button" class="password-toggle-btn" id="btnToggleModalLoginPass">👁</button>
+                </div>
+              </div>
+
+              <button type="submit" id="btnModalLoginSubmit" class="btn btn-primary btn-full-width" style="padding: 10px;">
+                <span>Sign In to Studio</span>
+              </button>
+            </form>
+
+            <div class="auth-divider" style="margin: 14px 0 10px 0;"><span>Social Sign In</span></div>
+            <div class="social-login-grid" style="gap: 8px;">
+              <button type="button" class="btn-social" id="btnModalSocialGoogle" style="padding: 7px; font-size: 0.8rem;">Google</button>
+              <button type="button" class="btn-social" id="btnModalSocialGithub" style="padding: 7px; font-size: 0.8rem;">GitHub</button>
+              <button type="button" class="btn-social" id="btnModalSocialApple" style="padding: 7px; font-size: 0.8rem;">Apple</button>
+            </div>
+          </div>
+
+          <div id="panelAuthSignup" class="modal-auth-tab-panel" style="padding: 20px 0 0 0;">
+            <form id="formModalSignup" class="auth-form" style="gap: 12px;" novalidate>
+              <div class="form-group">
+                <label for="inputModalSignupName" class="form-label" style="font-size: 0.8rem;">Full Name</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">👤</span>
+                  <input type="text" id="inputModalSignupName" class="text-input" placeholder="Alex Morgan" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputModalSignupEmail" class="form-label" style="font-size: 0.8rem;">Email Address</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">✉️</span>
+                  <input type="email" id="inputModalSignupEmail" class="text-input" placeholder="alex@company.com" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputModalSignupPass" class="form-label" style="font-size: 0.8rem;">Password (Min 6 chars)</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">🔒</span>
+                  <input type="password" id="inputModalSignupPass" class="text-input" placeholder="••••••••" required>
+                  <button type="button" class="password-toggle-btn" id="btnToggleModalSignupPass">👁</button>
+                </div>
+                <div class="pass-strength-widget">
+                  <div class="strength-bar-track">
+                    <div class="strength-bar-fill" id="modalStrengthBar"></div>
+                  </div>
+                  <div class="strength-labels">
+                    <span class="strength-tag">Strength: <strong id="modalStrengthLabel">None</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="inputModalSignupConfirm" class="form-label" style="font-size: 0.8rem;">Confirm Password</label>
+                <div class="input-with-icon">
+                  <span class="input-prefix-icon">✓</span>
+                  <input type="password" id="inputModalSignupConfirm" class="text-input" placeholder="••••••••" required>
+                  <span class="match-status-badge hidden" id="modalPassMatchBadge">Match</span>
+                </div>
+              </div>
+
+              <button type="submit" id="btnModalSignupSubmit" class="btn btn-primary btn-full-width" style="padding: 10px;">
+                <span>Create Free Account</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Account Profile & User Settings -->
+  <div id="modalProfile" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-profile-card">
+      <div class="modal-header-brand">
+        <span class="modal-brand-label">ACCOUNT PROFILE & SETTINGS</span>
+        <button type="button" class="modal-close-btn" id="btnCloseProfileModal">✕</button>
+      </div>
+
+      <div style="padding: 24px;">
+        <div class="profile-hero-banner">
+          <div id="profileHeroAvatar" class="user-avatar-circle lg">AM</div>
+          <div class="profile-hero-info">
+            <h3 id="profileHeroName">Alex Morgan</h3>
+            <p id="profileHeroEmail">alex@omniqr.pro</p>
+            <span id="profileHeroPlanBadge" class="profile-tier-badge">PRO STUDIO UNLIMITED</span>
+          </div>
+        </div>
+
+        <div class="profile-sections-grid">
+          <div class="profile-section-box">
+            <h4 class="profile-section-title">
+              <span>👤</span>
+              <span>Edit Profile Details</span>
+            </h4>
+            <form id="formUpdateProfile" style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="form-group">
+                <label for="inputProfileName" class="form-label" style="font-size: 0.8rem;">Display Name</label>
+                <input type="text" id="inputProfileName" class="text-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 0.8rem;">Avatar Theme</label>
+                <div class="avatar-color-options" id="avatarColorPicker">
+                  <div class="avatar-color-dot active" data-grad="linear-gradient(135deg, #6366F1, #06B6D4)" style="background: linear-gradient(135deg, #6366F1, #06B6D4);"></div>
+                  <div class="avatar-color-dot" data-grad="linear-gradient(135deg, #10B981, #059669)" style="background: linear-gradient(135deg, #10B981, #059669);"></div>
+                  <div class="avatar-color-dot" data-grad="linear-gradient(135deg, #F59E0B, #D97706)" style="background: linear-gradient(135deg, #F59E0B, #D97706);"></div>
+                  <div class="avatar-color-dot" data-grad="linear-gradient(135deg, #EC4899, #8B5CF6)" style="background: linear-gradient(135deg, #EC4899, #8B5CF6);"></div>
+                  <div class="avatar-color-dot" data-grad="linear-gradient(135deg, #F43F5E, #E11D48)" style="background: linear-gradient(135deg, #F43F5E, #E11D48);"></div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-secondary btn-sm" style="align-self: flex-start;">Save Profile Changes</button>
+            </form>
+          </div>
+
+          <div class="profile-section-box">
+            <h4 class="profile-section-title">
+              <span>🔒</span>
+              <span>Security & Password</span>
+            </h4>
+            <form id="formChangePassword" style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="form-group">
+                <label for="inputOldPass" class="form-label" style="font-size: 0.8rem;">Current Password</label>
+                <input type="password" id="inputOldPass" class="text-input" placeholder="••••••••" required>
+              </div>
+              <div class="form-group">
+                <label for="inputNewPass" class="form-label" style="font-size: 0.8rem;">New Password</label>
+                <input type="password" id="inputNewPass" class="text-input" placeholder="Min. 6 characters" required>
+              </div>
+              <button type="submit" class="btn btn-secondary btn-sm" style="align-self: flex-start;">Update Password</button>
+            </form>
+          </div>
+
+          <div class="profile-section-box">
+            <h4 class="profile-section-title">
+              <span>💾</span>
+              <span>Account Vault Data</span>
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+              Download a complete JSON backup of all your saved QR codes and analytics telemetry logs from SQLite.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" id="btnExportVaultBackup" class="btn btn-secondary btn-sm">
+                <span>Export QR Vault (JSON)</span>
+              </button>
+              <button type="button" id="btnProfileLogout" class="btn btn-secondary btn-sm" style="color: #FB7185;">
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>OmniQR Pro Studio • High-Performance Vector QR Generator & Real-time Scan Telemetry</span>
+      <span class="footer-meta">SQLite Database Backed • 100% Client-Side Privacy</span>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

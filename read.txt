@@ -1,0 +1,11 @@
+npm init -y
+npm install express better-sqlite3 cors bcryptjs
+
+
+npm install sqlite3
+
+
+
+//for tunnel
+
+ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
